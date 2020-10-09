@@ -1,0 +1,96 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    loadb: autoScale-lb
+    auto_sc: autoscale-asg
+    lc: autoscale-lc
+    image: ami-0947d2ba12ee1ff75
+    keypair: useast1key
+    group: sg-34500f0b
+    subnetID: default
+    regi: us-east-1
+  tasks:
+   - ec2_elb_lb:
+      security_group_ids: "{{ group }}"
+      name: "{{ loadb }}"
+      region: "{{ regi }}"
+      zones:
+       - us-east-1a
+       - us-east-1b
+       - us-east-1c
+       - us-east-1e
+      state: present
+      listeners:
+       - protocol: http
+         load_balancer_port: 80
+         instance_port: 80
+
+   - ec2_lc:
+      region:  "{{regi}}"
+      name: '{{lc}}'
+      image_id: '{{ image }}'
+      key_name: "{{ keypair }}"
+      security_groups: '{{ group }}'
+      instance_type: t2.micro
+      volumes:
+       - device_name: /dev/sda1
+         volume_size: 100
+         device_type: io1
+         iops: 3000
+         delete_on_termination: true
+
+   - ec2_asg:
+      region:  "{{ regi }}"
+      name: '{{ auto_sc }}'
+      load_balancers: '{{ loadb }}'
+      availability_zones: 'us-east-1a'
+      launch_config_name: '{{ lc }}'
+      min_size: 1
+      max_size: 4
+      desired_capacity: 2
+      wait_for_instances: true
+
+   - ec2_scaling_policy:
+      region: "{{regi}}"
+      state: present
+      name: "{{item.pol_name}}"
+      adjustment_type: "ChangeInCapacity"
+      asg_name: "{{auto_sc}}"
+      scaling_adjustment: "{{item.changes}}"
+      min_adjustment_step: 1
+      cooldown: 300
+     register: policies
+     with_items:
+      - pol_name: "cpuUP_{{auto_sc}}_policy"
+        changes: +1
+      - pol_name: "cpuDown_{{auto_sc}}_policy"
+        changes: -1
+
+   - ec2_metric_alarm:
+      state: present
+      region: "{{regi}}"
+      name: "{{item.names}}"
+      metric: "CPUUtilization"
+      namespace: "AWS/EC2"
+      statistic: Average
+      comparison: "{{item.compare}}"
+      threshold: "{{item.limits}}"
+      period: 60
+      evaluation_periods: 1
+      unit: "Percent"
+      description: "{{item.desc}}"
+      dimensions: {'AutoScalingGroupName':'{{auto_sc}}'}
+      alarm_actions: "{{item.pol}}"
+     with_items:
+      - names: "cpuUP_{{auto_sc}}"
+        compare: ">="
+        limits: "20.0"
+        desc: "This will alarm when the average cpu usage of the ASG is greater than 20% for 1 minute"
+        pol: "{{policies.results[0]['arn']}}"
+      - names: "cpuDown_{{auto_sc}}"
+        compare: "<="
+        limits: "10.0"
+        desc: "This will alarm when the average cpu usage of the ASG is less than 10% for 1 minute"
+        pol: "{{policies.results[1]['arn']}}"

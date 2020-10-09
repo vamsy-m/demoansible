@@ -1,0 +1,15 @@
+---
+  - name: Playbook to launch ec2 instance in AWS
+    hosts: localhost
+    connection: local
+    gather_facts: false
+    tasks:
+      - name: deploy ec2 instance
+        ec2:
+         instance_type: t2.micro
+         image: ami-0947d2ba12ee1ff75
+         region: us-east-1
+         key_name: useast1key
+         instance_tags:
+           Env: test
+           Name: DemoInstance

@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+   - name: Create storage account
+     azure_rm_storageaccount:
+        resource_group: DemoRG
+        name: storageaccounta0
+        account_type: Standard_LRS
