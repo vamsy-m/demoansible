@@ -1,0 +1,16 @@
+---
+- name: Create and reserve an Elastic IP that can be assoiciated later 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: allocate a new elastic IP without associating it to anything
+      ec2_eip:
+        region: us-east-1
+        state: present
+        tag_name: FREE
+      register: eip
+
+    - name: output the IP
+      debug:
+        msg: "Allocated IP is {{ eip.public_ip }}"  
