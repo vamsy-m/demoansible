@@ -2,6 +2,15 @@
 - hosts: localhost
   connection: local
   tasks:
+
+    - name: Create Resource group
+      azure_rm_resourcegroup:
+        name: DemoRG
+        location: westus
+        state: present
+        tags:
+          testing: demo
+
     - name: Create virtual network
       azure_rm_virtualnetwork:
         resource_group: DemoRG

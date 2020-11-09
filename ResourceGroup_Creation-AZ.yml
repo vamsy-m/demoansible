@@ -13,4 +13,4 @@
       register: rgname
       
     - debug:
-        msg: "Resource group created : {{ rgname }}" 
+        msg: "Resource group created " 

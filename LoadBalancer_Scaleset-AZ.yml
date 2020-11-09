@@ -1,10 +1,10 @@
 - hosts: localhost
   # Provide resourcegroup name,scalesetname,lb name and location before executing  
   vars:
-    resource_group: DemoRG
+    resource_group: DemoRG1
     vmss_name: scaleset03
     vmss_lb_name: LB_Scaleset03
-    location: westus
+    location: SouthCentralUS
     admin_username: azureuser
     admin_password: Pa55word1234
   tasks:

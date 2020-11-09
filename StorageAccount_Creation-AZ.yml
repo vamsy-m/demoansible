@@ -2,6 +2,14 @@
 - hosts: localhost
   connection: local
   tasks:
+    - name: Create Resource group
+      azure_rm_resourcegroup:
+        name: DemoRG
+        location: westus
+        state: present
+        tags:
+          testing: demo
+
    - name: Create storage account
      azure_rm_storageaccount:
         resource_group: DemoRG

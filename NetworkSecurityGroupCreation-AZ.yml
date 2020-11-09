@@ -2,6 +2,16 @@
 - hosts: localhost
   connection: local
   tasks:
+    - name: Create Resource group
+      azure_rm_resourcegroup:
+        name: DemoRG
+        location: westus
+        state: present
+        tags:
+          testing: demo
+          delete: never
+      register: rgname
+
     - name: Create security group that allows SSH
       azure_rm_securitygroup:
         resource_group: DemoRG
