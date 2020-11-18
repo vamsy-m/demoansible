@@ -1,17 +1,18 @@
 ---
-- hosts: localhost
-  connection: local
-  tasks:
-    - name: Create Resource group
-      azure_rm_resourcegroup:
-        name: DemoRG
-        location: westus
-        state: present
-        tags:
-          testing: demo
-
-   - name: Create storage account
-     azure_rm_storageaccount:
-        resource_group: DemoRG
-        name: storageaccounta0
-        account_type: Standard_LRS
+ - hosts: localhost
+   gather_facts: false
+   connection: local
+   tasks:
+     - name: Create Resource group
+       azure_rm_resourcegroup:
+         name: DemoRG
+         location: westus
+         state: present
+         tags:
+           testing: demo
+   
+     - name: Create storage account
+       azure_rm_storageaccount:
+          resource_group: DemoRG
+          name: storageaccounta0
+          account_type: Standard_LRS
