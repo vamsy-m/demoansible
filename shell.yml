@@ -1,7 +1,6 @@
 ---
  - name: Running sample commands
    hosts: localhost
-   gather_facts: false
    connection: local
    tasks:
      - name: Check the folder
@@ -10,10 +9,16 @@
      - name: current directory
        shell: pwd
        register: pwd
+     - name: current directory
+       shell: id
+       register: id
     
      - name: output the hostname
        debug:
-         msg: "Allocated hostname is {{ hostname.stdout }}"
+         msg: "hostname is {{ hostname.stdout }}"
      - name: output the pwd
        debug:
-         msg: "Allocated hostname is {{ pwd.stdout }}"
+         msg: "current working directory is {{ pwd.stdout }}"
+     - name: output the id
+       debug:
+         msg: "user id is {{ id.stdout }}"
