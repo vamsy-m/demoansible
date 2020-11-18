@@ -1,0 +1,19 @@
+---
+ - name: Running sample commands
+   hosts: localhost
+   gather_facts: false
+   connection: local
+   tasks:
+     - name: Check the folder
+       shell: hostname
+       register: hostname
+     - name: current directory
+       shell: pwd
+       register: pwd
+    
+     - name: output the hostname
+       debug:
+         msg: "Allocated hostname is {{ hostname.stdout }}"
+     - name: output the pwd
+       debug:
+         msg: "Allocated hostname is {{ pwd.stdout }}"
