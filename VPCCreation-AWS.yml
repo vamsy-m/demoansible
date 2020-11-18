@@ -1,0 +1,22 @@
+---
+  - name: Playbook to create VPC in AWS
+    hosts: localhost
+    connection: local
+    gather_facts: false
+    tasks:
+      - name:  Create VPC
+        ec2_vpc_net:
+          name: DemoVPC
+          cidr_block: 10.10.0.0/16
+          region: us-east-1
+          tags:
+            module: ec2_vpc_net
+
+      - name: VPC Info
+        ec2_vpc_net_info:  
+        register: vpc
+
+      - name: output the VPC Info
+        debug:
+          msg: "Allocated vpcinfo is {{ vpc.vpcs }}  "
+          

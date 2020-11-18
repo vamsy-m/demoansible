@@ -1,6 +1,7 @@
 ---
 - hosts: localhost
 # Provide already created RG name,scaleset name and new policy name before executing
+  gather_facts: false
   vars:
     resource_group: DemoRG1
     vmss_name: scaleset03
